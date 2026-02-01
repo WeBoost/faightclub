@@ -2,6 +2,9 @@ import { NextRequest } from 'next/server';
 import { runBattle } from '@/lib/arena';
 import { encodeSSE } from '@/lib/streaming';
 
+// Increase function timeout for battle (6 OpenAI calls)
+export const maxDuration = 60; // seconds (Pro plan allows up to 300)
+
 // Simple in-memory rate limiting (best-effort)
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
 const RATE_LIMIT = 10; // requests per minute
