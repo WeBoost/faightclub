@@ -12,6 +12,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
+    // In App Router, request.text() gives us the raw body directly
     const body = await request.text();
     const event = verifyWebhookSignature(body, signature);
     
@@ -28,10 +29,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-
-// Disable body parsing - we need raw body for signature verification
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
