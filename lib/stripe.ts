@@ -2,24 +2,87 @@ import Stripe from 'stripe';
 import { createOrReuseEntitlement, Tier } from './entitlements';
 import { sendEmail } from './resend';
 
-// Stripe client
-export const stripe = process.env.STRIPE_SECRET_KEY
-  ? new Stripe(process.env.STRIPE_SECRET_KEY, {
-      apiVersion: '2024-06-20',
-    })
-  : null;
+// Get current Stripe mode (defaults to 'live' if not set)
+export function getStripeMode(): 'test' | 'live' {
+  const mode = (process.env.STRIPE_MODE || 'live').trim().toLowerCase();
+  return mode === 'test' ? 'test' : 'live';
+}
+
+// Get the appropriate secret key based on mode
+function getSecretKey(): string {
+  const mode = getStripeMode();
+  if (mode === 'test') {
+    return (process.env.STRIPE_SECRET_KEY_TEST || '').trim();
+  }
+  return (process.env.STRIPE_SECRET_KEY || '').trim();
+}
+
+// Get the appropriate webhook secret based on mode
+export function getWebhookSecret(): string {
+  const mode = getStripeMode();
+  if (mode === 'test') {
+    return (process.env.STRIPE_WEBHOOK_SECRET_TEST || '').trim();
+  }
+  return (process.env.STRIPE_WEBHOOK_SECRET || '').trim();
+}
+
+// Create Stripe client with the appropriate key
+export function getStripeClient(): Stripe | null {
+  const secretKey = getSecretKey();
+  if (!secretKey) return null;
+  
+  return new Stripe(secretKey, {
+    apiVersion: '2024-06-20',
+  });
+}
+
+// Legacy export for backwards compatibility
+export const stripe = getStripeClient();
+
+// Get price ID for a tier based on current mode
+export function getPriceId(tier: 'pro' | 'builder' | 'sponsor'): string | undefined {
+  const mode = getStripeMode();
+  const suffix = mode === 'test' ? '_TEST' : '';
+  
+  switch (tier) {
+    case 'pro':
+      return (process.env[`STRIPE_ACTIVE_PRO_PRICE_ID${suffix}`] || '').trim() || undefined;
+    case 'builder':
+      return (process.env[`STRIPE_BUILDER_PRICE_ID${suffix}`] || '').trim() || undefined;
+    case 'sponsor':
+      return (process.env[`STRIPE_SPONSOR_PRICE_ID${suffix}`] || '').trim() || undefined;
+  }
+}
+
+// Get all active price IDs for current mode
+export function getActivePriceIds(): Record<string, string | undefined> {
+  return {
+    pro: getPriceId('pro'),
+    builder: getPriceId('builder'),
+    sponsor: getPriceId('sponsor'),
+  };
+}
 
 // Price ID to tier mapping (populated at runtime from env)
 function getPriceToTierMap(): Record<string, Tier> {
   const map: Record<string, Tier> = {};
   
-  const proPrice = process.env.STRIPE_ACTIVE_PRO_PRICE_ID;
-  const builderPrice = process.env.STRIPE_BUILDER_PRICE_ID;
-  const sponsorPrice = process.env.STRIPE_SPONSOR_PRICE_ID;
+  // Add both TEST and LIVE prices to the map so webhook can handle both
+  const proPriceLive = (process.env.STRIPE_ACTIVE_PRO_PRICE_ID || '').trim();
+  const builderPriceLive = (process.env.STRIPE_BUILDER_PRICE_ID || '').trim();
+  const sponsorPriceLive = (process.env.STRIPE_SPONSOR_PRICE_ID || '').trim();
   
-  if (proPrice) map[proPrice] = 'pro';
-  if (builderPrice) map[builderPrice] = 'builder';
-  if (sponsorPrice) map[sponsorPrice] = 'sponsor';
+  const proPriceTest = (process.env.STRIPE_ACTIVE_PRO_PRICE_ID_TEST || '').trim();
+  const builderPriceTest = (process.env.STRIPE_BUILDER_PRICE_ID_TEST || '').trim();
+  const sponsorPriceTest = (process.env.STRIPE_SPONSOR_PRICE_ID_TEST || '').trim();
+  
+  if (proPriceLive) map[proPriceLive] = 'pro';
+  if (builderPriceLive) map[builderPriceLive] = 'builder';
+  if (sponsorPriceLive) map[sponsorPriceLive] = 'sponsor';
+  
+  if (proPriceTest) map[proPriceTest] = 'pro';
+  if (builderPriceTest) map[builderPriceTest] = 'builder';
+  if (sponsorPriceTest) map[sponsorPriceTest] = 'sponsor';
   
   return map;
 }
@@ -31,23 +94,24 @@ export function verifyWebhookSignature(
   payload: string | Buffer,
   signature: string
 ): Stripe.Event {
-  if (!stripe) {
+  const client = getStripeClient();
+  if (!client) {
     throw new Error('Stripe not configured');
   }
   
-  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  const webhookSecret = getWebhookSecret();
   if (!webhookSecret) {
     throw new Error('STRIPE_WEBHOOK_SECRET not configured');
   }
 
-  return stripe.webhooks.constructEvent(payload, signature, webhookSecret);
+  return client.webhooks.constructEvent(payload, signature, webhookSecret);
 }
 
 /**
  * Handle webhook events
  */
 export async function handleWebhookEvent(event: Stripe.Event): Promise<void> {
-  console.log(`[Stripe Webhook] Received event: ${event.type}`);
+  console.log(`[Stripe Webhook] Received event: ${event.type} (mode: ${getStripeMode()})`);
   
   switch (event.type) {
     case 'checkout.session.completed':
@@ -67,7 +131,8 @@ export async function handleWebhookEvent(event: Stripe.Event): Promise<void> {
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session): Promise<void> {
   console.log('[Stripe Webhook] Processing checkout.session.completed');
   
-  if (!stripe) {
+  const client = getStripeClient();
+  if (!client) {
     throw new Error('Stripe not configured');
   }
 
@@ -79,7 +144,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session): Promis
   }
 
   // Fetch line items to determine which price was purchased
-  const lineItems = await stripe.checkout.sessions.listLineItems(session.id, {
+  const lineItems = await client.checkout.sessions.listLineItems(session.id, {
     limit: 1,
   });
 
@@ -116,7 +181,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session): Promis
   console.log(`[Stripe Webhook] Entitlement created/updated: ${entitlement.access_key}`);
 
   // Send email with access key
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://faightclub.com';
+  const appUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://faightclub.com').trim();
   const accessLink = `${appUrl}/?k=${entitlement.access_key}`;
 
   const tierNames: Record<Tier, string> = {
@@ -163,4 +228,22 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session): Promis
     console.error('[Stripe Webhook] Failed to send email:', emailError);
     // Don't throw - entitlement was created, user can still access via /thanks
   }
+}
+
+/**
+ * Get payments status for admin diagnostics
+ */
+export function getPaymentsStatus() {
+  const mode = getStripeMode();
+  const paymentsEnabled = (process.env.PAYMENTS_ENABLED || '').trim() === 'true';
+  const secretKey = getSecretKey();
+  const webhookSecret = getWebhookSecret();
+  
+  return {
+    mode,
+    paymentsEnabled,
+    stripeConfigured: !!secretKey,
+    webhookConfigured: !!webhookSecret,
+    activePriceIds: getActivePriceIds(),
+  };
 }

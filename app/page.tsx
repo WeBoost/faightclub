@@ -100,7 +100,7 @@ function HomeContent() {
   const [limitReached, setLimitReached] = useState(false);
   const [tier, setTier] = useState<string | null>(null);
   const [hasKey, setHasKey] = useState(false);
-  const [buildInfo, setBuildInfo] = useState<{ commitShort: string; vercelEnv: string } | null>(null);
+  const [buildInfo, setBuildInfo] = useState<{ commitShort: string; vercelEnv: string; stripeMode?: string } | null>(null);
   const feedRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -277,6 +277,15 @@ function HomeContent() {
       <Suspense fallback={null}>
         <URLHandler onKeyFound={handleKeyFound} onCanceled={handleCanceled} />
       </Suspense>
+
+      {/* Test Mode Banner */}
+      {buildInfo?.stripeMode === 'test' && (
+        <div className="bg-yellow-500/20 border-b border-yellow-500/50 px-4 py-2 text-center">
+          <span className="text-yellow-400 text-sm font-medium">
+            ⚠️ Payments in TEST mode - use card 4242 4242 4242 4242
+          </span>
+        </div>
+      )}
 
       {/* Header */}
       <header className="border-b border-gray-800 px-6 py-4">

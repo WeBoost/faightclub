@@ -1,18 +1,7 @@
 import { NextResponse } from 'next/server';
-import Stripe from 'stripe';
-
-const stripe = new Stripe((process.env.STRIPE_SECRET_KEY || '').trim(), {
-  apiVersion: '2024-06-20',
-});
+import { getStripeClient, getPriceId, getStripeMode } from '@/lib/stripe';
 
 const APP_URL = (process.env.NEXT_PUBLIC_APP_URL || 'https://faightclub.com').trim();
-
-// Price ID mapping - trim all values to handle env var newlines
-const PRICE_IDS: Record<string, string | undefined> = {
-  pro: process.env.STRIPE_ACTIVE_PRO_PRICE_ID?.trim(),
-  builder: process.env.STRIPE_BUILDER_PRICE_ID?.trim(),
-  sponsor: process.env.STRIPE_SPONSOR_PRICE_ID?.trim(),
-};
 
 // Subscription vs one-time
 const SUBSCRIPTION_TIERS = ['pro', 'builder'];
@@ -27,6 +16,14 @@ export async function POST(request: Request) {
       );
     }
 
+    const stripe = getStripeClient();
+    if (!stripe) {
+      return NextResponse.json(
+        { error: 'Stripe not configured' },
+        { status: 503 }
+      );
+    }
+
     const body = await request.json();
     const { tier } = body;
 
@@ -37,10 +34,10 @@ export async function POST(request: Request) {
       );
     }
 
-    const priceId = PRICE_IDS[tier];
+    const priceId = getPriceId(tier);
     if (!priceId) {
       return NextResponse.json(
-        { error: `Price ID not configured for tier: ${tier}` },
+        { error: `Price ID not configured for tier: ${tier} (mode: ${getStripeMode()})` },
         { status: 500 }
       );
     }
