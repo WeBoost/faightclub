@@ -1,9 +1,3 @@
-import OpenAI from 'openai';
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 export const MODELS = {
   premium: process.env.OPENAI_MODEL_PREMIUM || 'gpt-4o',
   economy: process.env.OPENAI_MODEL_ECONOMY || 'gpt-4o-mini',
@@ -27,40 +21,35 @@ export async function complete({
   systemPrompt,
   temperature = 0.7,
 }: CompletionOptions): Promise<string> {
-  const response = await openai.chat.completions.create({
-    model: MODELS[model],
-    max_tokens: MAX_TOKENS[model],
-    temperature,
-    messages: [
-      { role: 'system', content: systemPrompt },
-      { role: 'user', content: prompt },
-    ],
-  });
-
-  return response.choices[0]?.message?.content || '';
-}
-
-export async function* streamComplete({
-  model,
-  prompt,
-  systemPrompt,
-  temperature = 0.7,
-}: CompletionOptions): AsyncGenerator<string> {
-  const stream = await openai.chat.completions.create({
-    model: MODELS[model],
-    max_tokens: MAX_TOKENS[model],
-    temperature,
-    stream: true,
-    messages: [
-      { role: 'system', content: systemPrompt },
-      { role: 'user', content: prompt },
-    ],
-  });
-
-  for await (const chunk of stream) {
-    const content = chunk.choices[0]?.delta?.content;
-    if (content) yield content;
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) {
+    throw new Error('OPENAI_API_KEY not set');
   }
+
+  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model: MODELS[model],
+      max_tokens: MAX_TOKENS[model],
+      temperature,
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: prompt },
+      ],
+    }),
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`OpenAI API error: ${response.status} - ${error}`);
+  }
+
+  const data = await response.json();
+  return data.choices?.[0]?.message?.content || '';
 }
 
-export default openai;
+// Streaming not implemented with fetch - can add later if needed
