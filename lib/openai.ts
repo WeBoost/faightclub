@@ -1,5 +1,5 @@
 export const MODELS = {
-  // Hardcoded for now - env vars have trailing newlines from heredoc input
+  // .trim() prevents hidden newline issues from env vars
   premium: (process.env.OPENAI_MODEL_PREMIUM || 'gpt-4o').trim(),
   economy: (process.env.OPENAI_MODEL_ECONOMY || 'gpt-4o-mini').trim(),
 };

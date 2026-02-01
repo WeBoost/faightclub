@@ -19,6 +19,13 @@ interface StageEvent {
   agentName?: string;
 }
 
+interface FeedItem {
+  stage: string;
+  label: string;
+  agentName?: string;
+  timestamp: number;
+}
+
 const STAGES = [
   'entering',
   'generating_a',
@@ -31,14 +38,25 @@ const STAGES = [
 ];
 
 const STAGE_LABELS: Record<string, string> = {
-  entering: '⚔️ Entering Arena',
-  generating_a: '🤖 Agent A Generating',
-  generating_b: '🤖 Agent B Generating',
-  refining_a: '✨ Refining A',
-  refining_b: '✨ Refining B',
-  critique: '📝 Critic Analyzing',
-  judging: '⚖️ Judge Deciding',
-  winner: '🏆 Winner Declared',
+  entering: 'Entering Arena',
+  generating_a: 'Generating Code',
+  generating_b: 'Generating Code',
+  refining_a: 'Refining',
+  refining_b: 'Refining',
+  critique: 'Analyzing',
+  judging: 'Judging',
+  winner: 'Winner',
+};
+
+const STAGE_HEADLINES: Record<string, string> = {
+  entering: '⚔️ Agents entering the arena...',
+  generating_a: '🤖 Agent A is writing code...',
+  generating_b: '🤖 Agent B is writing code...',
+  refining_a: '✨ Agent A polishing solution...',
+  refining_b: '✨ Agent B polishing solution...',
+  critique: '📝 Critic reviewing both solutions...',
+  judging: '⚖️ Judge making final decision...',
+  winner: '🏆 WINNER DECLARED!',
 };
 
 export default function HomePage() {
@@ -48,11 +66,22 @@ export default function HomePage() {
   const [currentStage, setCurrentStage] = useState<string | null>(null);
   const [stageData, setStageData] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
+  const [feed, setFeed] = useState<FeedItem[]>([]);
+  const [matchup, setMatchup] = useState<string>('');
+  const [winnerName, setWinnerName] = useState<string>('');
   const eventSourceRef = useRef<EventSource | null>(null);
+  const feedRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetchBattles();
   }, []);
+
+  // Auto-scroll feed
+  useEffect(() => {
+    if (feedRef.current) {
+      feedRef.current.scrollTop = feedRef.current.scrollHeight;
+    }
+  }, [feed]);
 
   async function fetchBattles() {
     try {
@@ -77,6 +106,9 @@ export default function HomePage() {
     setError(null);
     setCurrentStage(null);
     setStageData({});
+    setFeed([]);
+    setMatchup('');
+    setWinnerName('');
 
     const es = new EventSource(`/api/run-battle?prompt=${encodeURIComponent(prompt)}`);
     eventSourceRef.current = es;
@@ -85,6 +117,33 @@ export default function HomePage() {
       try {
         const parsed: StageEvent = JSON.parse(event.data);
         setCurrentStage(parsed.stage);
+        
+        // Build matchup from entering stage
+        if (parsed.stage === 'entering' && parsed.data) {
+          setMatchup(parsed.data);
+        }
+
+        // Capture winner name
+        if (parsed.stage === 'winner' && parsed.data) {
+          setWinnerName(parsed.data);
+        }
+
+        // Add to feed
+        const feedItem: FeedItem = {
+          stage: parsed.stage,
+          label: STAGE_LABELS[parsed.stage] || parsed.stage,
+          agentName: parsed.agentName,
+          timestamp: Date.now(),
+        };
+        setFeed((prev) => {
+          // Avoid duplicates for same stage without new data
+          const lastItem = prev[prev.length - 1];
+          if (lastItem?.stage === parsed.stage && !parsed.data) {
+            return prev;
+          }
+          return [...prev, feedItem];
+        });
+
         if (parsed.data) {
           setStageData((prev) => ({
             ...prev,
@@ -96,7 +155,7 @@ export default function HomePage() {
           es.close();
           setRunning(false);
           setPrompt('');
-          fetchBattles();
+          setTimeout(fetchBattles, 500);
         }
       } catch {
         // Ignore parse errors
@@ -109,6 +168,8 @@ export default function HomePage() {
       setError('Battle failed. Please try again.');
     };
   }
+
+  const currentStageIndex = currentStage ? STAGES.indexOf(currentStage) : -1;
 
   return (
     <main className="min-h-screen">
@@ -155,7 +216,7 @@ export default function HomePage() {
               disabled={running || !prompt.trim()}
               className="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg font-semibold hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition"
             >
-              {running ? 'Battle in Progress...' : '⚔️ Run Battle'}
+              {running ? '⚔️ Battle in Progress...' : '⚔️ Run Battle'}
             </button>
           </div>
           {error && (
@@ -163,36 +224,103 @@ export default function HomePage() {
           )}
         </div>
 
-        {/* Live Battle Status */}
-        {running && currentStage && (
-          <div className="mt-8 p-6 bg-gray-900/50 border border-purple-500/50 rounded-lg stage-active">
-            <div className="flex items-center justify-center gap-2 mb-4">
-              <div className="w-3 h-3 bg-purple-500 rounded-full animate-pulse" />
-              <span className="text-lg font-semibold">
-                {STAGE_LABELS[currentStage] || currentStage}
-              </span>
-            </div>
-            
-            {/* Stage Progress */}
-            <div className="flex justify-center gap-2 mb-4">
-              {STAGES.map((stage) => (
-                <div
-                  key={stage}
-                  className={`w-3 h-3 rounded-full transition ${
-                    STAGES.indexOf(stage) <= STAGES.indexOf(currentStage)
-                      ? 'bg-purple-500'
-                      : 'bg-gray-700'
-                  }`}
-                />
-              ))}
+        {/* ARENA FEED - Live Battle Panel */}
+        {running && (
+          <div className="mt-8 max-w-2xl mx-auto">
+            {/* Arena Header */}
+            <div className="bg-gradient-to-r from-purple-900/50 to-pink-900/50 border border-purple-500/50 rounded-t-lg p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse" />
+                  <span className="text-sm font-semibold text-red-400 uppercase tracking-wide">LIVE</span>
+                </div>
+                {matchup && (
+                  <span className="text-lg font-bold">{matchup}</span>
+                )}
+              </div>
             </div>
 
-            {/* Stage Data Preview */}
-            {stageData[currentStage] && (
-              <div className="code-block text-left max-h-48 overflow-auto">
-                <pre className="text-green-400 text-sm">
-                  {stageData[currentStage].slice(0, 500)}
-                  {stageData[currentStage].length > 500 && '...'}
+            {/* Stage Progress Pills */}
+            <div className="bg-gray-900/80 border-x border-purple-500/50 px-4 py-3">
+              <div className="flex justify-between gap-1">
+                {STAGES.map((stage, idx) => (
+                  <div
+                    key={stage}
+                    className={`flex-1 h-2 rounded-full transition-all duration-300 ${
+                      idx <= currentStageIndex
+                        ? idx === currentStageIndex
+                          ? 'bg-purple-500 animate-pulse'
+                          : 'bg-purple-600'
+                        : 'bg-gray-700'
+                    }`}
+                    title={STAGE_LABELS[stage]}
+                  />
+                ))}
+              </div>
+              <div className="flex justify-between mt-2 text-xs text-gray-500">
+                <span>Start</span>
+                <span>Gen</span>
+                <span>Refine</span>
+                <span>Judge</span>
+                <span>End</span>
+              </div>
+            </div>
+
+            {/* Current Stage Headline */}
+            {currentStage && (
+              <div className="bg-gray-900/80 border-x border-purple-500/50 px-4 py-4 text-center">
+                <p className="text-2xl font-bold text-white">
+                  {STAGE_HEADLINES[currentStage]}
+                </p>
+                {currentStage === 'winner' && winnerName && (
+                  <p className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500 mt-2">
+                    {winnerName} WINS!
+                  </p>
+                )}
+              </div>
+            )}
+
+            {/* Live Feed */}
+            <div 
+              ref={feedRef}
+              className="bg-black/50 border-x border-b border-purple-500/50 rounded-b-lg max-h-48 overflow-y-auto"
+            >
+              <div className="p-4 space-y-2">
+                {feed.map((item, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-center gap-3 text-sm animate-slide-up"
+                  >
+                    <span className="text-gray-500 text-xs w-16 flex-shrink-0">
+                      {new Date(item.timestamp).toLocaleTimeString([], { minute: '2-digit', second: '2-digit' })}
+                    </span>
+                    <span className={`px-2 py-0.5 rounded text-xs font-medium ${
+                      item.stage === 'winner' 
+                        ? 'bg-yellow-500/20 text-yellow-400'
+                        : item.stage.includes('generating') 
+                          ? 'bg-blue-500/20 text-blue-400'
+                          : item.stage.includes('refining')
+                            ? 'bg-green-500/20 text-green-400'
+                            : 'bg-purple-500/20 text-purple-400'
+                    }`}>
+                      {item.label}
+                    </span>
+                    {item.agentName && (
+                      <span className="text-gray-400">
+                        {item.agentName}
+                      </span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Code Preview (if available) */}
+            {stageData[currentStage || ''] && currentStage !== 'entering' && currentStage !== 'winner' && (
+              <div className="mt-4 code-block text-left max-h-32 overflow-auto rounded-lg">
+                <pre className="text-green-400 text-xs p-3">
+                  {stageData[currentStage || ''].slice(0, 300)}
+                  {(stageData[currentStage || '']?.length || 0) > 300 && '...'}
                 </pre>
               </div>
             )}

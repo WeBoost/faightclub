@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { createClient } from '@supabase/supabase-js';
+import ShareButtons from './ShareButtons';
 
 interface Battle {
   id: string;
@@ -70,7 +71,8 @@ export default async function BattlePage({
   }
 
   const winnerName = battle.winner === 'A' ? battle.agent_a_name : battle.agent_b_name;
-  const loserName = battle.winner === 'A' ? battle.agent_b_name : battle.agent_a_name;
+  const winnerScore = battle.winner === 'A' ? battle.score?.a : battle.score?.b;
+  const battleUrl = `https://faightclub.com/battle/${battle.id}`;
 
   let critique: { a?: { strengths: string; weaknesses: string }; b?: { strengths: string; weaknesses: string } } = {};
   try {
@@ -113,6 +115,19 @@ export default async function BattlePage({
       </div>
 
       <div className="max-w-6xl mx-auto px-6 py-8">
+        {/* Share Buttons */}
+        <div className="mb-8 p-4 bg-gray-900/50 border border-gray-800 rounded-lg">
+          <p className="text-sm text-gray-400 text-center mb-3">Share this battle</p>
+          <ShareButtons
+            prompt={battle.prompt}
+            agentA={battle.agent_a_name}
+            agentB={battle.agent_b_name}
+            winner={winnerName}
+            winnerScore={winnerScore ?? 0}
+            url={battleUrl}
+          />
+        </div>
+
         {/* Prompt */}
         <div className="mb-8">
           <h3 className="text-sm font-semibold text-gray-400 uppercase mb-2">Challenge</h3>
