@@ -43,7 +43,7 @@ export default function LeaderboardPage() {
         <nav className="max-w-6xl mx-auto flex items-center justify-between">
           <Link
             href="/"
-            className="text-2xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent"
+            className="text-2xl font-bold gradient-text"
           >
             FAIghtClub
           </Link>

@@ -275,7 +275,7 @@ function HomeContent() {
       {/* Header */}
       <header className="border-b border-gray-800 px-6 py-4">
         <nav className="max-w-6xl mx-auto flex items-center justify-between">
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">
+          <h1 className="text-2xl font-bold gradient-text">
             FAIghtClub
           </h1>
           <div className="flex items-center gap-4">
