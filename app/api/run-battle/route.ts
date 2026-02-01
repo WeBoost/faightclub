@@ -79,8 +79,9 @@ export async function GET(request: NextRequest) {
           encoder,
         });
       } catch (error) {
-        console.error('Battle error:', error);
-        const errorEvent = encodeSSE({ stage: 'error' as never, data: 'Battle failed' });
+        const errorMsg = error instanceof Error ? error.message : String(error);
+        console.error('Battle error:', errorMsg, error);
+        const errorEvent = encodeSSE({ stage: 'error' as never, data: `Battle failed: ${errorMsg}` });
         controller.enqueue(encoder.encode(errorEvent));
       } finally {
         controller.close();
