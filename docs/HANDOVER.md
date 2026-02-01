@@ -73,15 +73,15 @@ Existing £19 subscribers keep their price (Stripe handles this).
 | `RESEND_API_KEY` | Resend API key | ✅ Set |
 | `SEED_SECRET` | Seed endpoint secret | ✅ Set |
 
-### Stripe Price IDs (Required)
+### Stripe Price IDs (LIVE)
 
-| Variable | Description | Status |
-|----------|-------------|--------|
-| `STRIPE_PRO_EARLY_PRICE_ID` | £19/mo price ID | ⚠️ NEEDS SET |
-| `STRIPE_PRO_STANDARD_PRICE_ID` | £29/mo price ID | ⚠️ NEEDS SET |
-| `STRIPE_BUILDER_PRICE_ID` | £299/mo price ID | ⚠️ NEEDS SET |
-| `STRIPE_SPONSOR_PRICE_ID` | £10 one-time price ID | ⚠️ NEEDS SET |
-| `STRIPE_ACTIVE_PRO_PRICE_ID` | Currently active Pro price | ⚠️ NEEDS SET (use £19 ID) |
+| Variable | Description | Value |
+|----------|-------------|-------|
+| `STRIPE_PRO_EARLY_PRICE_ID` | £19/mo price ID | `price_1Sw2H4S4reQY66BSDhTFKyiw` ✅ |
+| `STRIPE_PRO_STANDARD_PRICE_ID` | £29/mo price ID | `price_1Sw2HHS4reQY66BS9SYDHIdR` ✅ |
+| `STRIPE_BUILDER_PRICE_ID` | £299/mo price ID | `price_1Sw2HSS4reQY66BS8b0ZhE2n` ✅ |
+| `STRIPE_SPONSOR_PRICE_ID` | £10 one-time price ID | `price_1Sw2HTS4reQY66BSyrBnl5fE` ✅ |
+| `STRIPE_ACTIVE_PRO_PRICE_ID` | Currently active Pro price | `price_1Sw2H4S4reQY66BSDhTFKyiw` (£19) ✅ |
 
 ### Email & Domain Verification
 
@@ -91,9 +91,14 @@ Existing £19 subscribers keep their price (Stripe handles this).
 | `FROM_EMAIL` | From address for emails | ✅ Set (keys@mail.faightclub.com) |
 | `EMAIL_ENABLED` | Kill switch for email | ✅ Set (true) |
 | `RESEND_AUTO_DNS_ENABLED` | Enable auto DNS setup | ✅ Set (true) |
-| `VERCEL_TOKEN` | Vercel API token | ⚠️ NEEDS SET |
+| `VERCEL_TOKEN` | Vercel API token | ✅ Set |
 | `VERCEL_TEAM_ID` | Vercel team ID | ✅ Set |
-| `ADMIN_SECRET` | Admin API auth | ✅ Set |
+| `ADMIN_SECRET` | Admin API auth | ✅ Set (`faightclub-admin-2026`) |
+
+**Domain Status**: ✅ VERIFIED
+- Domain: `mail.faightclub.com`
+- Region: us-east-1
+- All 3 DNS records (DKIM, SPF TXT, SPF MX) verified
 
 ### Setting Up Stripe
 
@@ -282,9 +287,10 @@ Using a subdomain for sending:
 3. ✅ Add Copy Arena Proof buttons
 4. ✅ Fix model env vars
 5. ✅ Implement monetization
-6. ⚠️ SET STRIPE PRICE IDS IN VERCEL
-7. ⏳ Verify Resend domain
+6. ✅ Set Stripe price IDs in Vercel
+7. ✅ Verify Resend domain (mail.faightclub.com)
 8. ⏳ First Clawdbook seed post
+9. ⏳ Lightning rail + auto-posting
 
 ## File Structure
 
