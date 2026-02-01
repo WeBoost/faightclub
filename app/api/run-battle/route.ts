@@ -54,41 +54,36 @@ export async function GET(request: NextRequest) {
     return new Response('Prompt too long (max 2000 characters)', { status: 400 });
   }
 
-  // Create SSE stream
+  // Create SSE stream using TransformStream pattern
   const encoder = new TextEncoder();
-  let streamController: ReadableStreamDefaultController;
-
+  
   const stream = new ReadableStream({
-    start(controller) {
-      streamController = controller;
+    async start(controller) {
+      // Create a simple writer interface
+      const writer = {
+        write: async (data: Uint8Array) => {
+          controller.enqueue(data);
+        },
+        close: async () => {
+          controller.close();
+        },
+      };
+
+      // Run battle
+      try {
+        await runBattle(prompt, {
+          writer: writer as unknown as WritableStreamDefaultWriter,
+          encoder,
+        });
+      } catch (error) {
+        console.error('Battle error:', error);
+        const errorEvent = encodeSSE({ stage: 'error' as never, data: 'Battle failed' });
+        controller.enqueue(encoder.encode(errorEvent));
+      } finally {
+        controller.close();
+      }
     },
   });
-
-  // Create a simple writer interface
-  const writer = {
-    write: async (data: Uint8Array) => {
-      streamController.enqueue(data);
-    },
-    close: async () => {
-      streamController.close();
-    },
-  };
-
-  // Run battle in background
-  (async () => {
-    try {
-      await runBattle(prompt, {
-        writer: writer as unknown as WritableStreamDefaultWriter,
-        encoder,
-      });
-    } catch (error) {
-      console.error('Battle error:', error);
-      const errorEvent = encodeSSE({ stage: 'error' as any, data: 'Battle failed' });
-      streamController.enqueue(encoder.encode(errorEvent));
-    } finally {
-      streamController.close();
-    }
-  })();
 
   return new Response(stream, {
     headers: {
