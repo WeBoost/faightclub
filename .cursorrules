@@ -1,0 +1,81 @@
+# FAIghtClub Cursor Rules
+
+## First Steps - ALWAYS
+
+1. Read `docs/HANDOVER.md` first
+2. Check `docs/ROADMAP.md` for context
+3. Review recent changes before coding
+
+## Core Principles
+
+### No Scope Creep
+- Stick to the requested task
+- Don't add "nice to have" features
+- Ask if unclear about scope
+
+### Token Efficiency
+- Keep prompts SHORT
+- Request CODE ONLY where applicable
+- Premium max_tokens: 900
+- Economy max_tokens: 500
+- Reject prompts > 2000 chars
+
+### Security
+- NEVER expose service role key
+- Client uses anon key only
+- Validate all inputs
+- No secrets in code or logs
+
+## Coding Standards
+
+### TypeScript
+- Use strict mode
+- Define interfaces for all data shapes
+- Avoid `any` - use `unknown` if needed
+
+### React/Next.js
+- Prefer server components
+- Use 'use client' only when needed
+- Keep components small
+- Colocate related code
+
+### API Routes
+- Validate inputs early
+- Return proper status codes
+- Log errors, not user data
+- Handle edge cases
+
+## Documentation
+
+### After Changes
+- Update `HANDOVER.md` if:
+  - New env vars added
+  - Schema changed
+  - New features added
+  - Breaking changes made
+
+### Commit Messages
+- Be descriptive but concise
+- Reference issue/task if applicable
+
+## Don't Do
+
+- Don't build auth (out of scope)
+- Don't build payment UI (prep only)
+- Don't add unnecessary dependencies
+- Don't refactor without reason
+- Don't over-engineer
+
+## Quick Reference
+
+```
+Premium model: gpt-4o (900 tokens)
+Economy model: gpt-4o-mini (500 tokens)
+
+Tables: battles, leaderboard
+Keys: anon (client), service_role (server)
+
+Domain: faightclub.com
+Resend: pending verification
+Stripe: test mode, webhook only
+```
