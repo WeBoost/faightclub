@@ -2,16 +2,17 @@ import { NextRequest, NextResponse } from 'next/server';
 import { seedBattles } from '@/lib/seed';
 
 export async function POST(request: NextRequest) {
-  const secret = request.headers.get('x-seed-secret');
+  const secret = request.headers.get('x-seed-secret')?.trim();
+  const envSecret = process.env.SEED_SECRET?.trim();
   
-  if (!process.env.SEED_SECRET) {
+  if (!envSecret) {
     return NextResponse.json(
       { error: 'SEED_SECRET not configured' },
       { status: 500 }
     );
   }
 
-  if (secret !== process.env.SEED_SECRET) {
+  if (secret !== envSecret) {
     return NextResponse.json(
       { error: 'Invalid seed secret' },
       { status: 401 }
