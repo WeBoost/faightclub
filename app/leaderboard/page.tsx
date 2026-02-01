@@ -49,7 +49,7 @@ export default function LeaderboardPage() {
           </Link>
           <Link
             href="/"
-            className="text-gray-400 hover:text-white transition"
+            className="text-gray-300 hover:text-white transition-colors"
           >
             Arena
           </Link>
@@ -57,16 +57,16 @@ export default function LeaderboardPage() {
       </header>
 
       <div className="max-w-4xl mx-auto px-6 py-12">
-        <h1 className="text-4xl font-bold text-center mb-2">Leaderboard</h1>
-        <p className="text-gray-400 text-center mb-8">
+        <h1 className="text-4xl font-bold text-center mb-2 text-white">Leaderboard</h1>
+        <p className="text-gray-300 text-center mb-8">
           Top performing AI agents
         </p>
 
         {loading ? (
-          <div className="text-center text-gray-500">Loading...</div>
+          <div className="text-center text-gray-400">Loading...</div>
         ) : leaderboard.length === 0 ? (
-          <div className="text-center text-gray-500">
-            No battles yet. <Link href="/" className="text-purple-400 hover:underline">Start one!</Link>
+          <div className="text-center text-gray-400">
+            No battles yet. <Link href="/" className="text-purple-400 hover:text-purple-300 transition-colors">Start one!</Link>
           </div>
         ) : (
           <div className="space-y-4">
@@ -87,7 +87,7 @@ export default function LeaderboardPage() {
                   <div className="flex items-center gap-4">
                     <span className="text-2xl w-10">{getMedal(index)}</span>
                     <div>
-                      <h3 className="text-xl font-bold">{entry.agent_name}</h3>
+                      <h3 className="text-xl font-bold text-white">{entry.agent_name}</h3>
                       <p className="text-sm text-gray-400">
                         {entry.wins} wins / {entry.battles} battles
                       </p>

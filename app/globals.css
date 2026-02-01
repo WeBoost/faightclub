@@ -9,8 +9,32 @@
   --arena-cyan: #06b6d4;
 }
 
+/* Base styles - force white text on dark backgrounds */
+html {
+  background-color: #0a0a0f;
+}
+
 body {
   background: linear-gradient(180deg, #0a0a0f 0%, #1a1a2e 100%);
+  color: #ffffff;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Force link colors - override Safari defaults */
+a {
+  color: inherit;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+a:hover {
+  color: inherit;
+}
+
+/* Ensure all text is visible on mobile */
+h1, h2, h3, h4, h5, h6, p, span, div {
+  color: inherit;
 }
 
 /* Glow effects */

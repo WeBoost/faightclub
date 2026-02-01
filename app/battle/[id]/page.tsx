@@ -62,8 +62,8 @@ export default async function BattlePage({
     return (
       <main className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Battle Not Found</h1>
-          <Link href="/" className="text-purple-400 hover:underline">
+          <h1 className="text-2xl font-bold mb-4 text-white">Battle Not Found</h1>
+          <Link href="/" className="text-purple-400 hover:text-purple-300 transition-colors">
             ← Back to Arena
           </Link>
         </div>
@@ -97,7 +97,7 @@ export default async function BattlePage({
           </Link>
           <Link
             href="/leaderboard"
-            className="text-gray-400 hover:text-white transition"
+            className="text-gray-300 hover:text-white transition-colors"
           >
             Leaderboard
           </Link>
@@ -105,11 +105,11 @@ export default async function BattlePage({
       </header>
 
       {/* Winner Banner */}
-      <div className="winner-banner py-6 text-center">
-        <p className="text-sm uppercase tracking-wide opacity-80">Winner</p>
-        <h2 className="text-4xl font-bold">{winnerName} 🏆</h2>
+      <div className="winner-banner py-6 text-center text-white">
+        <p className="text-sm uppercase tracking-wide text-white/80">Winner</p>
+        <h2 className="text-4xl font-bold text-white">{winnerName} 🏆</h2>
         {battle.score && (
-          <p className="mt-2 text-lg">
+          <p className="mt-2 text-lg text-white">
             {battle.score.a} - {battle.score.b}
           </p>
         )}
@@ -135,7 +135,7 @@ export default async function BattlePage({
         {/* Prompt */}
         <div className="mb-8">
           <h3 className="text-sm font-semibold text-gray-400 uppercase mb-2">Challenge</h3>
-          <p className="text-xl">{battle.prompt}</p>
+          <p className="text-xl text-white">{battle.prompt}</p>
         </div>
 
         {/* Judge Reason */}
@@ -151,7 +151,7 @@ export default async function BattlePage({
           {/* Agent A */}
           <div className={`p-6 rounded-lg border ${battle.winner === 'A' ? 'border-green-500/50 bg-green-500/5' : 'border-gray-800'}`}>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold">{battle.agent_a_name}</h3>
+              <h3 className="text-xl font-bold text-white">{battle.agent_a_name}</h3>
               <div className="flex items-center gap-2">
                 <span className={`text-2xl font-bold ${battle.winner === 'A' ? 'text-green-400' : 'text-gray-400'}`}>
                   {battle.score?.a ?? '-'}
@@ -177,7 +177,7 @@ export default async function BattlePage({
           {/* Agent B */}
           <div className={`p-6 rounded-lg border ${battle.winner === 'B' ? 'border-green-500/50 bg-green-500/5' : 'border-gray-800'}`}>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold">{battle.agent_b_name}</h3>
+              <h3 className="text-xl font-bold text-white">{battle.agent_b_name}</h3>
               <div className="flex items-center gap-2">
                 <span className={`text-2xl font-bold ${battle.winner === 'B' ? 'text-green-400' : 'text-gray-400'}`}>
                   {battle.score?.b ?? '-'}
@@ -203,7 +203,7 @@ export default async function BattlePage({
 
         {/* Back Link */}
         <div className="mt-8 text-center">
-          <Link href="/" className="text-purple-400 hover:underline">
+          <Link href="/" className="text-purple-400 hover:text-purple-300 transition-colors">
             ← Back to Arena
           </Link>
         </div>

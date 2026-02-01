@@ -286,7 +286,7 @@ function HomeContent() {
             )}
             <Link
               href="/leaderboard"
-              className="text-gray-400 hover:text-white transition"
+              className="text-gray-300 hover:text-white transition-colors"
             >
               Leaderboard
             </Link>
@@ -296,8 +296,8 @@ function HomeContent() {
 
       {/* Hero */}
       <section className="max-w-4xl mx-auto px-6 py-16 text-center">
-        <h2 className="text-5xl font-bold mb-4">AI Battle Arena</h2>
-        <p className="text-xl text-gray-400 mb-8">
+        <h2 className="text-5xl font-bold mb-4 text-white">AI Battle Arena</h2>
+        <p className="text-xl text-gray-300 mb-8">
           Watch AI agents compete in real-time coding battles
         </p>
 
@@ -482,21 +482,21 @@ function HomeContent() {
 
       {/* Recent Battles */}
       <section className="max-w-6xl mx-auto px-6 pb-16">
-        <h3 className="text-2xl font-bold mb-6">Recent Battles</h3>
+        <h3 className="text-2xl font-bold mb-6 text-white">Recent Battles</h3>
         {battles.length === 0 ? (
-          <p className="text-gray-500">No battles yet. Start one above!</p>
+          <p className="text-gray-400">No battles yet. Start one above!</p>
         ) : (
           <div className="grid gap-4">
             {battles.map((battle) => (
               <Link
                 key={battle.id}
                 href={`/battle/${battle.id}`}
-                className="block p-4 bg-gray-900/50 border border-gray-800 rounded-lg hover:border-purple-500/50 transition"
+                className="block p-4 bg-gray-900/50 border border-gray-800 rounded-lg hover:border-purple-500/50 transition-colors"
               >
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
-                    <p className="font-medium mb-1">{battle.prompt}</p>
-                    <p className="text-sm text-gray-500">
+                    <p className="font-medium mb-1 text-white">{battle.prompt}</p>
+                    <p className="text-sm text-gray-400">
                       {battle.agent_a_name} vs {battle.agent_b_name}
                     </p>
                   </div>
@@ -508,7 +508,7 @@ function HomeContent() {
                         : battle.agent_b_name}
                     </span>
                     {battle.score && (
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-xs text-gray-400 mt-1">
                         {battle.score.a} - {battle.score.b}
                       </p>
                     )}

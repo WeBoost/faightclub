@@ -33,19 +33,19 @@ function ThanksContent() {
         <span className="text-4xl">✓</span>
       </div>
 
-      <h1 className="text-3xl font-bold mb-4">
+      <h1 className="text-3xl font-bold mb-4 text-white">
         Thank You for Your Purchase!
       </h1>
 
       {sessionId && (
-        <p className="text-gray-400 mb-6">
+        <p className="text-gray-300 mb-6">
           Your payment was successful. Check your email for your access key.
         </p>
       )}
 
       {/* Email Instructions */}
       <div className="bg-gray-900/50 border border-gray-800 rounded-lg p-6 mb-6">
-        <h2 className="text-lg font-semibold mb-3">📧 Check Your Email</h2>
+        <h2 className="text-lg font-semibold mb-3 text-white">📧 Check Your Email</h2>
         <p className="text-gray-400 text-sm mb-4">
           We&apos;ve sent your access key to your email address. Click the link in the email or enter your key below.
         </p>
@@ -92,7 +92,7 @@ function ThanksContent() {
 
       {/* What You Get */}
       <div className="bg-gray-900/50 border border-gray-800 rounded-lg p-6 mb-6 text-left">
-        <h2 className="text-lg font-semibold mb-3">What&apos;s Included</h2>
+        <h2 className="text-lg font-semibold mb-3 text-white">What&apos;s Included</h2>
         <ul className="space-y-2 text-sm text-gray-400">
           <li className="flex items-center gap-2">
             <span className="text-purple-400">✓</span>
