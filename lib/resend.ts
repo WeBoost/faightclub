@@ -1,11 +1,24 @@
 import { Resend } from 'resend';
 
 // Initialize Resend client
-// NOTE: Domain verification required before sending from custom domain
-// See HANDOVER.md for DNS setup checklist
 const resend = process.env.RESEND_API_KEY
   ? new Resend(process.env.RESEND_API_KEY)
   : null;
+
+/**
+ * Get the FROM email address
+ * Uses FROM_EMAIL env var if set, otherwise falls back to Resend test domain
+ */
+function getFromEmail(): string {
+  return process.env.FROM_EMAIL || 'onboarding@resend.dev';
+}
+
+/**
+ * Check if email sending is enabled
+ */
+function isEmailEnabled(): boolean {
+  return process.env.EMAIL_ENABLED !== 'false';
+}
 
 export interface EmailOptions {
   to: string;
@@ -17,25 +30,31 @@ export interface EmailOptions {
 /**
  * Send an email via Resend
  * 
- * IMPORTANT: Until domain is verified, emails can only be sent from
- * onboarding@resend.dev (Resend's test domain)
- * 
- * After verifying faightclub.com (or subdomain), update the default 'from'
+ * Respects EMAIL_ENABLED kill switch
+ * Uses FROM_EMAIL env var or falls back to onboarding@resend.dev
  */
 export async function sendEmail({
   to,
   subject,
   html,
-  from = 'onboarding@resend.dev', // Change after domain verification
+  from,
 }: EmailOptions): Promise<{ success: boolean; id?: string; error?: string }> {
+  // Check kill switch
+  if (!isEmailEnabled()) {
+    console.log('[Resend] Email sending disabled (EMAIL_ENABLED=false)');
+    return { success: false, error: 'Email sending disabled' };
+  }
+
   if (!resend) {
     console.error('[Resend] API key not configured');
     return { success: false, error: 'Resend not configured' };
   }
 
+  const fromAddress = from || getFromEmail();
+
   try {
     const { data, error } = await resend.emails.send({
-      from,
+      from: fromAddress,
       to,
       subject,
       html,
@@ -46,7 +65,7 @@ export async function sendEmail({
       return { success: false, error: error.message };
     }
 
-    console.log(`[Resend] Email sent successfully: ${data?.id}`);
+    console.log(`[Resend] Email sent successfully: ${data?.id} from ${fromAddress}`);
     return { success: true, id: data?.id };
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error';
@@ -59,6 +78,9 @@ export async function sendEmail({
  * Send a test email (for /api/test-email route)
  */
 export async function sendTestEmail(to: string): Promise<{ success: boolean; id?: string; error?: string }> {
+  const fromEmail = getFromEmail();
+  const isCustomDomain = !fromEmail.includes('resend.dev');
+
   return sendEmail({
     to,
     subject: '🥊 FAIghtClub Test Email',
@@ -69,8 +91,10 @@ export async function sendTestEmail(to: string): Promise<{ success: boolean; id?
         <p>If you received this, your Resend integration is working!</p>
         <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
         <p style="color: #666; font-size: 12px;">
-          Note: This email was sent from onboarding@resend.dev (Resend test domain).
-          Once domain verification is complete, emails will come from your verified domain.
+          ${isCustomDomain 
+            ? `Sent from verified domain: ${fromEmail}`
+            : 'Note: This email was sent from onboarding@resend.dev (Resend test domain). Once domain verification is complete, emails will come from your verified domain.'
+          }
         </p>
       </div>
     `,

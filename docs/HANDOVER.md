@@ -83,6 +83,18 @@ Existing £19 subscribers keep their price (Stripe handles this).
 | `STRIPE_SPONSOR_PRICE_ID` | £10 one-time price ID | ⚠️ NEEDS SET |
 | `STRIPE_ACTIVE_PRO_PRICE_ID` | Currently active Pro price | ⚠️ NEEDS SET (use £19 ID) |
 
+### Email & Domain Verification
+
+| Variable | Description | Status |
+|----------|-------------|--------|
+| `RESEND_SENDING_DOMAIN` | Email sending domain | ✅ Set (mail.faightclub.com) |
+| `FROM_EMAIL` | From address for emails | ✅ Set (keys@mail.faightclub.com) |
+| `EMAIL_ENABLED` | Kill switch for email | ✅ Set (true) |
+| `RESEND_AUTO_DNS_ENABLED` | Enable auto DNS setup | ✅ Set (true) |
+| `VERCEL_TOKEN` | Vercel API token | ⚠️ NEEDS SET |
+| `VERCEL_TEAM_ID` | Vercel team ID | ✅ Set |
+| `ADMIN_SECRET` | Admin API auth | ✅ Set |
+
 ### Setting Up Stripe
 
 1. Go to Stripe Dashboard (LIVE mode)
@@ -205,6 +217,45 @@ CREATE TABLE entitlements (
 - Cached server-side for 5 minutes
 - URL param `?k=KEY` auto-saves to localStorage
 
+## Email Domain Verification
+
+### Automated Setup (Recommended)
+
+1. Get a Vercel API token:
+   - Go to https://vercel.com/account/tokens
+   - Create a new token with "Full Access"
+   - Set `VERCEL_TOKEN` in Vercel env vars
+
+2. Run the setup endpoint:
+   ```bash
+   curl -X POST https://faightclub.com/api/admin/resend/setup-domain \
+     -H "x-admin-secret: YOUR_ADMIN_SECRET"
+   ```
+
+3. Or use the admin UI:
+   - Visit `https://faightclub.com/admin/email?secret=YOUR_ADMIN_SECRET`
+   - Click "Check Status" then "Run Domain Setup"
+
+4. Wait for DNS propagation (usually <1 hour)
+
+5. Check status:
+   ```bash
+   curl https://faightclub.com/api/admin/resend/status \
+     -H "x-admin-secret: YOUR_ADMIN_SECRET"
+   ```
+
+### Why mail.faightclub.com?
+
+Using a subdomain for sending:
+- Keeps apex domain clean for future MX records
+- Reduces risk of deliverability issues
+- Follows email best practices
+
+### Kill Switches
+
+- `EMAIL_ENABLED=false` - Stops all email sending
+- `RESEND_AUTO_DNS_ENABLED=false` - Disables auto DNS setup
+
 ## Known Limitations
 
 1. **No billing portal** - users can't manage subscriptions (yet)
@@ -241,38 +292,44 @@ CREATE TABLE entitlements (
 faightclub/
 ├── app/
 │   ├── api/
+│   │   ├── admin/resend/
+│   │   │   ├── setup-domain/route.ts   # Auto domain setup
+│   │   │   └── status/route.ts         # Domain status check
 │   │   ├── battles/route.ts
 │   │   ├── leaderboard/route.ts
-│   │   ├── run-battle/route.ts        # SSE + tier limits
+│   │   ├── run-battle/route.ts         # SSE + tier limits
 │   │   ├── seed/route.ts
 │   │   ├── stripe/
-│   │   │   ├── create-checkout/route.ts  # NEW
-│   │   │   └── webhook/route.ts          # UPDATED
+│   │   │   ├── create-checkout/route.ts
+│   │   │   └── webhook/route.ts
 │   │   └── test-email/route.ts
+│   ├── admin/email/page.tsx            # Admin email UI
 │   ├── battle/[id]/
 │   │   ├── page.tsx
 │   │   ├── ShareButtons.tsx
-│   │   └── UpgradeCTA.tsx              # NEW
+│   │   └── UpgradeCTA.tsx
 │   ├── leaderboard/page.tsx
-│   ├── thanks/page.tsx                 # NEW
+│   ├── thanks/page.tsx
 │   ├── globals.css
 │   ├── layout.tsx
-│   └── page.tsx                        # UPDATED with CTAs
+│   └── page.tsx
 ├── lib/
 │   ├── arena.ts
-│   ├── entitlements.ts                 # NEW
+│   ├── entitlements.ts
 │   ├── openai.ts
 │   ├── prompts.ts
-│   ├── resend.ts
+│   ├── resend.ts                       # Email with kill switch
+│   ├── resend-domain.ts                # Resend domain API
 │   ├── seed.ts
 │   ├── streaming.ts
-│   ├── stripe.ts                       # UPDATED
+│   ├── stripe.ts
 │   ├── supabase-admin.ts
-│   └── supabase-public.ts
+│   ├── supabase-public.ts
+│   └── vercel-dns.ts                   # Vercel DNS API
 ├── supabase/
 │   └── migrations/
 │       ├── 20240201000000_init.sql
-│       └── 20240201000001_entitlements.sql  # NEW
+│       └── 20240201000001_entitlements.sql
 ├── docs/
 │   ├── ARCHITECTURE.md
 │   ├── HANDOVER.md
@@ -281,6 +338,13 @@ faightclub/
 ```
 
 ## Changelog
+
+### 2026-02-01 (Sprint 3)
+- Automated Resend domain verification
+- Vercel DNS integration for auto record creation
+- Admin email management UI (/admin/email)
+- EMAIL_ENABLED kill switch
+- FROM_EMAIL configuration
 
 ### 2026-02-01 (Sprint 2)
 - Monetization live with Stripe Checkout
