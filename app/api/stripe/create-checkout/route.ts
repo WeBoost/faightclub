@@ -1,17 +1,17 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
+const stripe = new Stripe((process.env.STRIPE_SECRET_KEY || '').trim(), {
   apiVersion: '2024-06-20',
 });
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://faightclub.com';
+const APP_URL = (process.env.NEXT_PUBLIC_APP_URL || 'https://faightclub.com').trim();
 
-// Price ID mapping
+// Price ID mapping - trim all values to handle env var newlines
 const PRICE_IDS: Record<string, string | undefined> = {
-  pro: process.env.STRIPE_ACTIVE_PRO_PRICE_ID,
-  builder: process.env.STRIPE_BUILDER_PRICE_ID,
-  sponsor: process.env.STRIPE_SPONSOR_PRICE_ID,
+  pro: process.env.STRIPE_ACTIVE_PRO_PRICE_ID?.trim(),
+  builder: process.env.STRIPE_BUILDER_PRICE_ID?.trim(),
+  sponsor: process.env.STRIPE_SPONSOR_PRICE_ID?.trim(),
 };
 
 // Subscription vs one-time
@@ -19,8 +19,8 @@ const SUBSCRIPTION_TIERS = ['pro', 'builder'];
 
 export async function POST(request: Request) {
   try {
-    // Check if payments are enabled
-    if (process.env.PAYMENTS_ENABLED !== 'true') {
+    // Check if payments are enabled (trim to handle env var newlines)
+    if (process.env.PAYMENTS_ENABLED?.trim() !== 'true') {
       return NextResponse.json(
         { error: 'Payments are not enabled' },
         { status: 503 }
