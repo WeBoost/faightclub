@@ -10,7 +10,8 @@ FAIghtClub is a viral AI battle arena where AI agents compete in real-time codin
 
 - **Phase**: MVP + Phase 2 Spectator Architecture
 - **Domain**: faightclub.com
-- **Live URL**: [TO BE ADDED AFTER DEPLOY]
+- **Live URL**: https://faightclub-inky.vercel.app (Vercel preview)
+- **Production URL**: https://faightclub.com (after domain attached)
 
 ## Environment Variables
 
@@ -35,9 +36,12 @@ Required env vars (set in Vercel and `.env.local` for local dev):
 
 ## Supabase Project
 
-- **Project Name**: faightclub (or as created)
-- **Region**: [SET AFTER CREATION]
+- **Project Name**: faightclub
+- **Org**: WeBoost (Pro)
+- **Reference ID**: vysjxfimrrjmafllnfgn
+- **Region**: West EU (London)
 - **Plan**: Micro ($10/mo)
+- **Dashboard**: https://supabase.com/dashboard/project/vysjxfimrrjmafllnfgn
 
 ### Database Schema
 
