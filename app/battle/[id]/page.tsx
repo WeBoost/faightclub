@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { createClient } from '@supabase/supabase-js';
 import ShareButtons from './ShareButtons';
+import UpgradeCTA from './UpgradeCTA';
 
 interface Battle {
   id: string;
@@ -127,6 +128,9 @@ export default async function BattlePage({
             url={battleUrl}
           />
         </div>
+
+        {/* Upgrade CTA */}
+        <UpgradeCTA />
 
         {/* Prompt */}
         <div className="mb-8">

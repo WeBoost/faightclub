@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyWebhookSignature, handleWebhookEvent } from '@/lib/stripe';
 
+export const maxDuration = 30;
+
 export async function POST(request: NextRequest) {
   const signature = request.headers.get('stripe-signature');
 
@@ -12,19 +14,19 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    // In App Router, request.text() gives us the raw body directly
+    // Get raw body for signature verification
     const body = await request.text();
     const event = verifyWebhookSignature(body, signature);
     
-    // Log and handle the event
-    handleWebhookEvent(event);
+    // Handle the event asynchronously
+    await handleWebhookEvent(event);
 
     return NextResponse.json({ received: true });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error';
-    console.error('[Stripe Webhook] Verification failed:', message);
+    console.error('[Stripe Webhook] Error:', message);
     return NextResponse.json(
-      { error: `Webhook verification failed: ${message}` },
+      { error: `Webhook error: ${message}` },
       { status: 400 }
     );
   }
