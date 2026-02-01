@@ -136,28 +136,19 @@ export async function deleteDomain(domainId: string): Promise<void> {
 /**
  * Parse Resend DNS records into Vercel-compatible format
  * 
- * Resend returns records relative to the domain (e.g., for mail.faightclub.com,
- * a DKIM record might be "resend._domainkey")
+ * Resend returns record names already formatted correctly:
+ * - For mail.faightclub.com, the record name "resend._domainkey.mail" is ready to use
+ * - The name is relative to the apex domain (faightclub.com)
  * 
- * For Vercel DNS, we need to express these relative to the apex domain (faightclub.com)
+ * We just need to clean up trailing dots and any apex domain references.
  */
 export function parseResendRecordsForVercel(
   resendRecords: ResendDnsRecord[],
-  sendingDomain: string,
+  _sendingDomain: string,
   apexDomain: string
 ): { name: string; type: 'TXT' | 'CNAME' | 'MX'; value: string; priority?: number }[] {
-  const isSubdomain = sendingDomain !== apexDomain;
-  const subdomain = isSubdomain ? sendingDomain.replace(`.${apexDomain}`, '') : '';
-
   return resendRecords.map((record) => {
     let name = record.name;
-    
-    // If the record name doesn't include the full domain and we're using a subdomain,
-    // prepend the subdomain
-    if (isSubdomain && !name.includes(sendingDomain)) {
-      // For records like "resend._domainkey", make it "resend._domainkey.mail"
-      name = name ? `${name}.${subdomain}` : subdomain;
-    }
 
     // Clean up - remove trailing dots and the apex domain if present
     name = name.replace(new RegExp(`\\.?${apexDomain}\\.?$`), '');
