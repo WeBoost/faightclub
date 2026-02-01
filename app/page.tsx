@@ -100,6 +100,7 @@ function HomeContent() {
   const [limitReached, setLimitReached] = useState(false);
   const [tier, setTier] = useState<string | null>(null);
   const [hasKey, setHasKey] = useState(false);
+  const [buildInfo, setBuildInfo] = useState<{ commitShort: string; vercelEnv: string } | null>(null);
   const feedRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -110,6 +111,11 @@ function HomeContent() {
       setHasKey(true);
       setTier('loading');
     }
+    // Fetch build info
+    fetch('/api/version')
+      .then(res => res.json())
+      .then(data => setBuildInfo(data))
+      .catch(() => {});
   }, []);
 
   // Auto-scroll feed
@@ -519,6 +525,15 @@ function HomeContent() {
           </div>
         )}
       </section>
+
+      {/* Build Info Footer */}
+      <footer className="border-t border-gray-800 px-6 py-4 mt-8">
+        <div className="max-w-6xl mx-auto text-center">
+          <p className="text-xs text-gray-600">
+            {buildInfo ? `Build: ${buildInfo.commitShort} • ${buildInfo.vercelEnv}` : 'Loading...'}
+          </p>
+        </div>
+      </footer>
     </>
   );
 }
