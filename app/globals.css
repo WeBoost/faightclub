@@ -37,12 +37,19 @@ h1, h2, h3, h4, h5, h6, p, span, div {
   color: inherit;
 }
 
-/* Safari gradient text fix */
+/* Gradient text - with solid color fallback */
 .gradient-text {
+  color: #a855f7; /* Fallback solid purple */
   background: linear-gradient(to right, #a855f7, #ec4899);
   -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+/* Only apply transparent fill if background-clip is supported */
+@supports (-webkit-background-clip: text) or (background-clip: text) {
+  .gradient-text {
+    -webkit-text-fill-color: transparent;
+  }
 }
 
 /* Glow effects */
