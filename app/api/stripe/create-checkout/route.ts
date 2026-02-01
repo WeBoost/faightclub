@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import Stripe from 'stripe';
 import { getStripeClient, getPriceId, getStripeMode } from '@/lib/stripe';
 
 const APP_URL = (process.env.NEXT_PUBLIC_APP_URL || 'https://faightclub.com').trim();
@@ -59,7 +60,7 @@ export async function POST(request: Request) {
       customerId = customer.id;
     }
 
-    const sessionConfig: Parameters<typeof stripe.checkout.sessions.create>[0] = {
+    const sessionConfig: Stripe.Checkout.SessionCreateParams = {
       mode: isSubscription ? 'subscription' : 'payment',
       line_items: [
         {
