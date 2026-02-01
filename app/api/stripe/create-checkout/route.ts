@@ -43,8 +43,23 @@ export async function POST(request: Request) {
     }
 
     const isSubscription = SUBSCRIPTION_TIERS.includes(tier);
+    const mode = getStripeMode();
 
-    const session = await stripe.checkout.sessions.create({
+    // In test mode, Stripe Accounts V2 requires an existing customer for Checkout
+    // We create a placeholder customer that will be updated with real email during checkout
+    let customerId: string | undefined;
+    if (mode === 'test') {
+      const customer = await stripe.customers.create({
+        metadata: {
+          source: 'faightclub_checkout',
+          tier: tier,
+          created_for_test: 'true',
+        },
+      });
+      customerId = customer.id;
+    }
+
+    const sessionConfig: Parameters<typeof stripe.checkout.sessions.create>[0] = {
       mode: isSubscription ? 'subscription' : 'payment',
       line_items: [
         {
@@ -54,11 +69,21 @@ export async function POST(request: Request) {
       ],
       success_url: `${APP_URL}/thanks?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${APP_URL}/?canceled=1`,
-      // Enable customer email collection
-      customer_creation: isSubscription ? undefined : 'always',
-      // Collect email
-      ...(isSubscription ? {} : { payment_intent_data: { receipt_email: undefined } }),
-    });
+    };
+
+    // Add customer for test mode (required by Accounts V2)
+    if (customerId) {
+      sessionConfig.customer = customerId;
+      sessionConfig.customer_update = {
+        name: 'auto',
+        address: 'auto',
+      };
+    } else {
+      // Live mode: enable customer creation
+      sessionConfig.customer_creation = isSubscription ? undefined : 'always';
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionConfig);
 
     return NextResponse.json({ url: session.url });
   } catch (error) {
