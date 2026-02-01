@@ -8,8 +8,9 @@ import { findDomainByName, getDomain } from '@/lib/resend-domain';
  */
 export async function GET(request: NextRequest) {
   // Auth check
-  const adminSecret = request.headers.get('x-admin-secret');
-  if (!adminSecret || adminSecret !== process.env.ADMIN_SECRET) {
+  const adminSecret = request.headers.get('x-admin-secret')?.trim();
+  const expectedSecret = process.env.ADMIN_SECRET?.trim();
+  if (!adminSecret || !expectedSecret || adminSecret !== expectedSecret) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
