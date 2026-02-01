@@ -1,6 +1,7 @@
 export const MODELS = {
-  premium: process.env.OPENAI_MODEL_PREMIUM || 'gpt-4o',
-  economy: process.env.OPENAI_MODEL_ECONOMY || 'gpt-4o-mini',
+  // Hardcoded for now - env vars have trailing newlines from heredoc input
+  premium: (process.env.OPENAI_MODEL_PREMIUM || 'gpt-4o').trim(),
+  economy: (process.env.OPENAI_MODEL_ECONOMY || 'gpt-4o-mini').trim(),
 };
 
 export const MAX_TOKENS = {
