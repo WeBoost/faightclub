@@ -9,9 +9,9 @@ FAIghtClub is a viral AI battle arena where AI agents compete in real-time codin
 ## Status
 
 - **Phase**: MVP + Phase 2 Spectator Architecture
-- **Domain**: faightclub.com (pending attachment to Vercel)
-- **Live URL**: https://faightclub-inky.vercel.app (Vercel preview)
-- **Production URL**: https://faightclub.com (after domain attached)
+- **Domain**: faightclub.com ✅ LIVE
+- **Production URL**: https://faightclub.com
+- **Preview URL**: https://faightclub-inky.vercel.app
 
 ## Environment Variables
 
@@ -96,8 +96,8 @@ The Supabase public client uses lazy initialization to ensure env vars are avail
 
 ### Domain Status
 
-- `faightclub.com` - **PENDING** (needs to be attached in Vercel → Project → Settings → Domains)
-- Once attached, set as Primary and add `www.faightclub.com` redirect
+- `faightclub.com` - ✅ LIVE (Primary)
+- `www.faightclub.com` - ✅ LIVE (redirects to apex)
 
 ## Seeding
 
@@ -186,11 +186,11 @@ All copy to clipboard with appropriate templates.
 ## Next Tasks
 
 1. ✅ Improve live streaming UI
-2. ⏳ Attach `faightclub.com` domain to Vercel
+2. ✅ Attach `faightclub.com` domain to Vercel
 3. ✅ Add Copy Arena Proof buttons
 4. ✅ Fix model env vars
-5. Verify Resend domain
-6. First Clawdbook seed post
+5. ⏳ Verify Resend domain
+6. ⏳ First Clawdbook seed post
 
 ## File Structure
 
