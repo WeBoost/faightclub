@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="robots" content="noindex,nofollow"/>
+<title>BITTOPIA v1.1.0</title>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#07131b;color:#fff8e8;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}iframe{border:0;width:100%;height:100%;display:block;background:#07131b}#status{position:fixed;inset:0;z-index:3;display:grid;place-items:center;background:radial-gradient(circle at 50% 28%,#174753,#07131b 57%,#03080d)}.card{text-align:center;padding:28px;max-width:680px}.coin{width:92px;height:92px;margin:auto;border-radius:29px;display:grid;place-items:center;background:linear-gradient(145deg,#ffb43c,#ed7516);font-size:56px;font-weight:950;box-shadow:0 22px 60px #0009,0 0 55px #ffac3140}h1{letter-spacing:.18em;margin:24px 0 9px;padding-left:.18em;font-size:clamp(27px,7vw,48px)}p{margin:0;color:#b8d0d8;font-size:14px;font-weight:700}.track{height:7px;margin:24px auto 13px;max-width:430px;border-radius:999px;background:#15313c;overflow:hidden}.fill{height:100%;width:15%;border-radius:inherit;background:linear-gradient(90deg,#ff8c18,#ffd166);transition:width .35s ease}.error{color:#ff9a91;line-height:1.5;font-weight:800}
+</style>
+</head>
+<body>
+<iframe id="game" title="BITTOPIA" allow="fullscreen; autoplay"></iframe>
+<div id="status"><div class="card"><div class="coin">₿</div><h1>BITTOPIA</h1><p id="copy">Loading premium city build 1.1.0…</p><div class="track"><div class="fill" id="fill"></div></div></div></div>
+<script>
+(async()=>{const ASSET='https://ljcrrxcfkyircgpjcbmm.supabase.co/functions/v1/bittopia-live-v110';const status=document.getElementById('status'),copy=document.getElementById('copy'),fill=document.getElementById('fill'),frame=document.getElementById('game');const step=(p,t)=>{fill.style.width=p+'%';copy.textContent=t};try{if(!('DecompressionStream'in window))throw new Error('This browser does not support the required decompression API.');step(28,'Downloading Riverside District…');const response=await fetch(ASSET,{cache:'no-store'});if(!response.ok)throw new Error(`Game asset returned HTTP ${response.status}.`);const compressed=await response.arrayBuffer();if(compressed.byteLength<50000)throw new Error(`Game asset is incomplete (${compressed.byteLength} bytes).`);step(56,'Unpacking city systems…');const stream=new Blob([compressed]).stream().pipeThrough(new DecompressionStream('gzip'));let html=await new Response(stream).text();if(!html.includes("window.__BITTOPIA_BUILD__ = '1.1.0'"))throw new Error('The hosted payload is not BITTOPIA build 1.1.0.');if(!html.includes('__BITTOPIA_POLISH__'))throw new Error('The premium interaction layer is missing.');const showcase=new URLSearchParams(location.search).has('showcase');if(showcase)html=html.replace("const SHOWCASE = new URLSearchParams(location.search).has('showcase');","const SHOWCASE = true;");html=html.replace('<link rel="manifest" href="./manifest.webmanifest" />','').replace('<link rel="icon" href="./icons/bittopia.svg" type="image/svg+xml" />','').replace("if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});",'void 0;');step(82,'Starting the settlement…');frame.addEventListener('load',()=>{step(100,'Welcome to BITTOPIA');setTimeout(()=>status.remove(),320)},{once:true});frame.srcdoc=html;setTimeout(()=>{if(status.isConnected){copy.className='error';copy.textContent='The city took too long to initialise. Reload this page and report the message shown.'}},18000)}catch(error){copy.className='error';copy.textContent=`Startup failed: ${error?.message||String(error)}`;fill.style.background='#ff6f61'}})();
+</script>
+</body>
+</html>
