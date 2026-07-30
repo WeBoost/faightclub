@@ -1,0 +1,45 @@
+/* BITTOPIA v1.0 — authored-asset, legibility and world-first polish */
+#scene:after{content:"";position:fixed;inset:0;pointer-events:none;z-index:2;background:radial-gradient(circle at 50% 48%,transparent 48%,rgba(1,12,18,.12) 100%);mix-blend-mode:multiply}
+@media(max-width:860px){
+  .topbar{height:60px;border-radius:18px}.city-overview-toggle{display:none!important}.brand{min-width:112px}.brand-copy strong{font-size:15px}.resource{min-width:54px;height:44px}.resource b{font-size:14px}.credit-wallet{min-width:90px;height:44px}.credit-wallet strong{font-size:17px}
+  .mission-card{top:74px;min-height:116px;padding:11px 12px}.advisor-portrait{width:48px;height:48px}.mission-card h1{font-size:23px}.primary-action{height:50px;font-size:15px}
+  .world-controls{bottom:96px;grid-template-columns:repeat(2,46px)}.world-controls button{width:46px;height:46px;min-width:46px;min-height:46px}.control-hint{bottom:96px}
+  .build-dock{height:84px}.build-menu-toggle b{font-size:14px!important}.advance-button strong{font-size:13px!important}.build-button strong{font-size:13px!important}
+}
+
+/* BITTOPIA v2.0 — bold mobile city-builder benchmark pass */
+:root{--v2-navy:#071c27;--v2-panel:#0a2734;--v2-panel2:#061821;--v2-cream:#fff4dc;--v2-orange:#ff9418;--v2-orange2:#ffb33e;--v2-cyan:#56d9ff;--v2-green:#5fe083}
+#scene canvas{filter:saturate(1.18) contrast(1.08);touch-action:none!important}
+.game-panel{background:linear-gradient(160deg,rgba(10,39,52,.98),rgba(4,19,27,.985));border-color:rgba(255,255,255,.22);box-shadow:0 18px 52px rgba(0,0,0,.52),inset 0 1px rgba(255,255,255,.11)}
+.brand-mark,.primary-action,.build-menu-toggle span{background:linear-gradient(160deg,var(--v2-orange2),var(--v2-orange))!important}
+.resource b,.credit-wallet strong,.mission-card h1,.build-menu-toggle b,.advance-button strong,.build-button strong{font-family:Inter,ui-rounded,"SF Pro Rounded",system-ui,sans-serif;font-weight:1000!important}
+.primary-action{border-color:#ffe1a8!important;box-shadow:0 12px 28px rgba(203,80,0,.48),inset 0 2px rgba(255,255,255,.42)!important}
+.mission-card{border-color:rgba(255,164,47,.6);box-shadow:0 18px 48px rgba(0,0,0,.52),0 0 0 2px rgba(255,148,24,.10)}
+.build-dock{background:linear-gradient(160deg,rgba(6,29,41,.99),rgba(3,15,23,.995));border-color:rgba(255,178,70,.42)}
+.build-button{background:linear-gradient(155deg,rgba(255,255,255,.09),rgba(255,255,255,.025))!important}
+.build-button.recommended{background:linear-gradient(155deg,rgba(255,168,46,.25),rgba(247,147,26,.08))!important;border-color:#ffae3f!important;box-shadow:0 0 0 2px rgba(255,155,25,.13),0 10px 28px rgba(216,89,0,.28)!important}
+.world-controls{background:rgba(5,23,32,.91);backdrop-filter:blur(14px)}
+.world-controls button{background:rgba(255,255,255,.10)!important;border-color:rgba(255,255,255,.14)!important}
+.loading-screen{background:radial-gradient(circle at 50% 38%,#176078 0,#092733 40%,#031018 76%,#01080d 100%)}
+
+@media(max-width:860px){
+  .topbar{left:8px;right:8px;top:max(8px,env(safe-area-inset-top));height:66px;padding:6px 7px;gap:6px;border-radius:21px}
+  .brand{min-width:116px;height:52px;gap:8px}.brand-mark{width:50px;height:50px;border-radius:16px;font-size:30px}.brand-copy strong{font-size:16px;letter-spacing:.13em}.brand-copy small{display:none}
+  .resource-strip{gap:5px;flex:1}.resource{height:50px;min-width:66px;padding:5px 8px;border-radius:15px}.resource-icon{display:none!important}.resource small{display:block!important;font-size:9px!important;letter-spacing:.04em;color:#b9d0d6}.resource b{font-size:15px!important;line-height:1.08}.resource:nth-child(n+3){display:none}
+  .credit-wallet{height:50px;min-width:104px;border-radius:15px;padding:5px 10px}.credit-wallet small{font-size:9px!important}.credit-wallet strong{font-size:20px!important}.credit-wallet em{font-size:10px}
+
+  .mission-card{left:8px;right:8px;top:82px;width:auto;min-height:138px;padding:13px 14px 12px;border-radius:22px}.mission-head{right:12px!important;top:10px!important}.mission-count{font-size:12px!important;padding:6px 10px!important}.mission-toggle{width:38px!important;height:38px!important;border-radius:12px!important;font-size:22px!important}
+  .advisor-row{padding-right:88px!important;gap:12px}.advisor-portrait{width:58px!important;height:58px!important;border-radius:19px!important}.advisor-name{font-size:11px!important;font-weight:1000!important;color:#c9dde0!important}.mission-card h1{font-size:25px!important;line-height:1.02!important;margin-top:5px!important;letter-spacing:-.025em!important}.mission-card>p,.mission-card .mission-lesson,.mission-card .mission-reward{display:none!important}.primary-action{height:56px!important;border-radius:17px!important;margin-top:12px!important;padding:0 20px!important;font-size:17px!important;letter-spacing:.04em!important}.primary-action i{font-size:28px!important}
+
+  .world-controls{right:8px!important;left:auto!important;bottom:104px!important;display:grid!important;grid-template-columns:repeat(3,50px)!important;padding:7px!important;gap:7px!important;border-radius:19px!important}.world-controls button{width:50px!important;height:50px!important;min-width:50px!important;min-height:50px!important;border-radius:15px!important;font-size:24px!important}.world-controls #zoom-in,.world-controls #zoom-out,.world-controls #toggle-night,.world-controls #audio-toggle,.world-controls #help-button,.camera-compass{display:none!important}
+  .control-hint{left:8px!important;right:auto!important;bottom:105px!important;max-width:calc(100vw - 190px)!important;padding:10px 12px!important;border-radius:17px!important}.control-hint-icon{width:40px!important;height:40px!important;border-radius:13px!important}.control-hint b{font-size:12px!important}.control-hint small{font-size:12px!important;line-height:1.25!important}.control-hint button{display:none}
+
+  .build-dock{left:8px!important;right:8px!important;bottom:max(8px,env(safe-area-inset-bottom))!important;height:90px!important;border-radius:23px!important;padding:8px!important;gap:8px!important;overflow:hidden!important}.build-dock:not(.open){left:auto!important;width:auto!important;max-width:248px!important}.build-dock:not(.open) .build-menu-toggle{width:118px!important;min-width:118px!important}.build-dock:not(.open) .advance-button{width:108px!important;min-width:108px!important}.build-dock.open{height:190px!important;overflow-x:auto!important;align-items:flex-end!important;padding-top:92px!important}.build-dock.open:before{content:"CHOOSE A PROJECT";position:absolute;left:18px;top:14px;font-size:13px;font-weight:1000;letter-spacing:.12em;color:#fff4dc}.build-dock.open:after{content:"Tap a card, then place it on a glowing lot";position:absolute;left:18px;top:39px;font-size:12px;font-weight:700;color:#a9c2c9}
+  .build-menu-toggle{width:118px!important;min-width:118px!important;height:72px!important;border-radius:17px!important;grid-template-columns:44px 1fr!important;padding:10px!important}.build-menu-toggle span{width:44px!important;height:44px!important;border-radius:14px!important;font-size:29px!important}.build-menu-toggle b{font-size:16px!important}.build-menu-toggle small{font-size:10px!important}.advance-button{height:72px!important;border-radius:17px!important}.advance-button span{font-size:28px!important}.advance-button strong{font-size:15px!important}.advance-button small{font-size:10px!important}.build-button{min-width:122px!important;width:122px!important;height:82px!important;border-radius:17px!important;padding:7px!important}.build-button strong{font-size:14px!important}.build-button small{font-size:11px!important}.build-art{height:40px!important}
+  .build-hint{bottom:105px!important;width:calc(100% - 16px)!important;padding:11px 14px!important;border-radius:17px!important}.build-hint span{font-size:10px!important}.build-hint b{font-size:16px!important}.build-hint small{font-size:11px!important}
+  .context-panel{left:8px!important;right:8px!important;bottom:105px!important;border-radius:22px!important;padding:16px!important}.context-copy small{font-size:11px!important}.context-copy h2{font-size:24px!important}.context-copy p{font-size:14px!important}.context-stats small{font-size:10px!important}.context-stats b{font-size:15px!important}.context-actions button{height:48px!important;font-size:13px!important;font-weight:900!important}
+  .toast-stack{top:230px!important}.toast{font-size:13px!important;line-height:1.35!important}
+}
+@media(max-width:430px){
+  .brand{min-width:106px}.brand-copy strong{font-size:14px}.resource{min-width:60px;padding:5px 6px}.resource small{font-size:8px!important}.resource b{font-size:14px!important}.credit-wallet{min-width:96px}.credit-wallet strong{font-size:18px!important}.mission-card h1{font-size:23px!important}.primary-action{font-size:16px!important}.control-hint{max-width:calc(100vw - 184px)!important}
+}
