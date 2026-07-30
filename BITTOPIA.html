@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="robots" content="noindex,nofollow" />
-  <title>BITTOPIA v0.8.2</title>
+  <title>BITTOPIA v0.8.3</title>
   <style>
     html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#07131b;color:#f3f8f5;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
     iframe{border:0;width:100%;height:100%;display:block;background:#07131b}
@@ -14,10 +14,10 @@
 </head>
 <body>
   <iframe id="game" title="BITTOPIA" allow="fullscreen; autoplay"></iframe>
-  <div id="status"><div class="card"><div class="coin">₿</div><h1>BITTOPIA</h1><p id="copy">Loading corrected build 0.8.2…</p></div></div>
+  <div id="status"><div class="card"><div class="coin">₿</div><h1>BITTOPIA</h1><p id="copy">Loading corrected build 0.8.3…</p></div></div>
   <script>
   (async()=>{
-    const ASSET='https://ljcrrxcfkyircgpjcbmm.supabase.co/functions/v1/bittopia-live-v082';
+    const ASSET='https://ljcrrxcfkyircgpjcbmm.supabase.co/functions/v1/bittopia-live-v083';
     const status=document.getElementById('status');
     const copy=document.getElementById('copy');
     const frame=document.getElementById('game');
@@ -26,10 +26,10 @@
       const response=await fetch(ASSET,{cache:'no-store'});
       if(!response.ok) throw new Error(`Game asset returned HTTP ${response.status}.`);
       const compressed=await response.arrayBuffer();
-      if(compressed.byteLength!==67156) throw new Error(`Game asset size mismatch (${compressed.byteLength}).`);
+      if(compressed.byteLength!==67182) throw new Error(`Game asset size mismatch (${compressed.byteLength}).`);
       const stream=new Blob([compressed]).stream().pipeThrough(new DecompressionStream('gzip'));
       let html=await new Response(stream).text();
-      if(!html.includes("window.__BITTOPIA_BUILD__ = '0.8.2'")) throw new Error('The hosted payload is not BITTOPIA build 0.8.2.');
+      if(!html.includes("window.__BITTOPIA_BUILD__ = '0.8.3'")) throw new Error('The hosted payload is not BITTOPIA build 0.8.3.');
       const showcase=new URLSearchParams(location.search).has('showcase');
       if(showcase) html=html.replace("const SHOWCASE = new URLSearchParams(location.search).has('showcase');","const SHOWCASE = true;");
       html=html
